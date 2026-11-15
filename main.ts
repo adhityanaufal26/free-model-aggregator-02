@@ -60,8 +60,12 @@ const PROTOCOL_VERSION = 1;
 const POLL_INTERVAL_MS = 100;
 /** The most bytes of one client request body this server reads. */
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
-/** The most gateway attempts for one prompt, token verification included. */
-const MAX_ATTEMPTS = 4;
+/** The most gateway attempts for one prompt, token verification included. Six, not four:
+ * the free tier rate-limits (20 req/min, shared) make bursts of 429s likely in the live final,
+ * and a refusal costs nothing on the tie-break — only successful gateway calls count. Worst
+ * case 6 prompts x 6 attempts = 36 requests stays under the 50/day free budget and the
+ * 60-call trial cap. */
+const MAX_ATTEMPTS = 6;
 /** The client's per-prompt budget is 30 s; every attempt together must fit inside it. */
 const REQUEST_BUDGET_MS = 26000;
 /** The name of the header that reports the trial's upstream refusals. */
